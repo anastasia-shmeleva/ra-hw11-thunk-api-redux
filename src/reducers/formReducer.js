@@ -1,0 +1,16 @@
+import { CHANGE_FIELD } from '../actions/actionTypes';
+
+const initialState = {
+  name: '',
+  price: ''
+};
+
+export default function formReducer(state = initialState, action) {
+  switch (action.type) {
+    case CHANGE_FIELD:
+      const { name, value } = action.payload;
+      return { ...state, [name]: value };
+    default:
+      return state;
+  }
+}
