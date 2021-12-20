@@ -1,8 +1,9 @@
-import { CHANGE_FIELD } from '../actions/actionTypes';
+import { CHANGE_FIELD, CLEAR_FORM } from '../actions/actionTypes';
 
 const initialState = {
   name: '',
-  price: ''
+  price: '',
+  content: '',
 };
 
 export default function formReducer(state = initialState, action) {
@@ -10,6 +11,12 @@ export default function formReducer(state = initialState, action) {
     case CHANGE_FIELD:
       const { name, value } = action.payload;
       return { ...state, [name]: value };
+    case CLEAR_FORM:
+      return state = {
+        name: '',
+        price: '',
+        content: '',
+      }
     default:
       return state;
   }

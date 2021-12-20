@@ -1,51 +1,69 @@
-// import { useSelector, useDispatch } from "react-redux";
-// import { listActions } from "../redux/listSlice";
-// import { formActions } from "../redux/formSlice";
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
+import { changeServiceField, clearForm, getItem, changeItem } from '../actions/actionCreators';
+import { Facebook } from 'react-spinners-css';
 
 export default function Form() {
-  // const dispatch = useDispatch();
-  // const { name, price } = useSelector((store) => store.formSlice.form);
-  // const items = useSelector((store) => store.listSlice.items);
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  let navigate = useNavigate();
+
+  useEffect(() => {
+    getItem(dispatch, id);
+  }, []);
+
+  const { name, price, content } = useSelector((rootReducer) => rootReducer.form);
+  const { status } = useSelector((rootReducer) => rootReducer.list);
 
   const handleChange = (event) => {
-  //   const { name, value } = event.target;
-  //   dispatch(formActions.change({type: name, value}));
+    const { name, value } = event.target;
+    dispatch(changeServiceField(name, value));
   }
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  //   const itemInStore = items.find(item => item.name === name || item.price === price);
-  //   if (itemInStore) {
-  //     const id = itemInStore.id;
-  //     dispatch(listActions.changeItem({id, name, price}));
-  //     dispatch(formActions.clearInput());
-  //     return
-  //   }
-  //   dispatch(listActions.addItem({id: Math.random(), name, price}));
-  //   dispatch(formActions.clearInput());
+    const itemToChange = {id, name, price, content};
+    changeItem(dispatch, itemToChange);
+    dispatch(clearForm());
+    if (status === 'success') navigate('/');
   }
 
   const handleCancel = (e) => {
-  //   e.preventDefault();
-  //   dispatch(formActions.clearInput());
+    e.preventDefault();
+    dispatch(clearForm());
+    navigate('/');
   }
 
+  if (status === 'pending') return <div style={{textAlign: 'center'}}><Facebook color={'black'}/></div>
+
+  if (status === 'error') return <div style={{textAlign: 'center', margin: 20, fontSize: 20}}>Something went wrong...</div>
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form style={{display: 'flex', flexDirection: 'column'}} onSubmit={handleSubmit}>
+      <label htmlFor="name" style={{paddingTop: 10, paddingBottom: 10}}>Name</label>
       <input 
         name='name'
-        // value={name}
+        value={name}
         onChange={handleChange}
         style={{width: 200}}
       />
+      <label htmlFor="price" style={{paddingTop: 10, paddingBottom: 10}}>Price</label>
       <input 
         name='price'
-        // value={price}
+        value={price}
         onChange={handleChange}
         style={{width: 200}}
       />
-      <button onClick={handleSubmit} type='primary'>Save</button>
-      <button onClick={handleCancel} type='primary'>Cancel</button>
+      <label htmlFor="Content" style={{paddingTop: 10, paddingBottom: 10}}>Content</label>
+      <input 
+        name='content'
+        value={content}
+        onChange={handleChange}
+        style={{width: 200}}
+      />
+      <button style={{width: 70, marginTop: 10}} onClick={handleSubmit} type='primary'>Save</button>
+      <button style={{width: 70, marginTop: 10}} onClick={handleCancel} type='primary'>Cancel</button>
     </form>
   )
 }
